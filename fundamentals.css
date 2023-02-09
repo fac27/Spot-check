@@ -1,0 +1,55 @@
+/* *CSS Fundamentals* */
+.center{
+    margin:auto;
+}
+
+/* *Flex* */
+.flex{
+    display:flex;
+}
+
+.row{
+    flex-direction: row;
+}
+
+.column{
+    flex-direction:column;
+}
+
+.align-center{
+    align-items:center;
+}
+
+.justify-start{
+    justify-content: flex-start;
+}
+
+.space-between{
+    justify-content: space-between;
+}
+
+.space-around{
+    justify-content: space-around;
+}
+
+.space-evenly{
+    justify-content: space-evenly;
+}
+
+/* *stacks* */
+.stack-sm > * + *{
+    margin-top:15px;
+}
+
+.stack-md > * + *{
+    margin-top:25px;
+}
+
+.stack-lg > * + *{
+    margin-top:35px;
+}
+
+/* *Styling Elements* */
+.rounded{
+    border-radius:20px;
+}
