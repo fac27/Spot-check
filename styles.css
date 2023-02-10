@@ -1,0 +1,54 @@
+* {
+  font-family: verdana, sans-serif;
+  font-size: 18px;
+  line-height: 0.2rem;
+  letter-spacing: 0.1em;
+  box-sizing: border-box;
+}
+
+:root {
+  /* These are absolutely random colors, apart from */
+  /* black and white. Those are meant to be easier  */
+  /* on the eyes than full-on black and white */
+  --color__base: #cf8f72;
+  --color__highlight: #0bb64e;
+  --color__black: #070707;
+  --color__white: #f7f7f7;
+}
+
+/* *Page Header* */
+#navbar {
+  height: 2.5rem;
+  width: 100%;
+  padding: 0.5rem;
+  background-color: var(--color__base);
+}
+
+#nav-img {
+  max-width: 15%;
+}
+
+/* *Search Form* */
+.form {
+  height: 150px;
+  width: 85%;
+  background-color: var(--color__white);
+  padding: 1.5em;
+}
+
+.form__label + .form__input {
+  margin-top: 1em;
+}
+
+.form__input {
+  width: 70%;
+  border: none;
+  box-shadow: 0 0 15px var(--color__highlight);
+}
+
+.form__button {
+  height: 2em;
+  width: 80%;
+  background-color: var(--color__base);
+  font-weight: bold;
+}
