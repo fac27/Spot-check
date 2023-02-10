@@ -11,7 +11,7 @@ The usage of the page is simple:
 ## Planning
 ### Wireframe
 
-![](/imgs/wireframe__1.svg)
+![alt wireframe](/imgs/wireframe__1.svg)
 
 ## Collaborating
 You can clone this repository with the following command:
