@@ -16,16 +16,30 @@
   --color__white: #f7f7f7;
 }
 
+body{
+  margin-top:3.5rem;
+}
+
 /* *Page Header* */
 #navbar {
-  height: 2.5rem;
+  position:fixed;
+  top:0;
+  left:0;
+  height: 3rem;
   width: 100%;
-  padding: 0.5rem;
+  padding: 0 10%;
   background-color: var(--color__base);
 }
 
 #nav-img {
-  max-width: 15%;
+  height: 100%;
+}
+
+/* *Page Header on Desktop* */
+@media only screen and (min-width: 480px) {
+  #navbar{
+    padding: 0 20%;
+  }
 }
 
 /* *Search Form* */
@@ -43,12 +57,25 @@
 .form__input {
   width: 70%;
   border: none;
+  padding:.5em;
   box-shadow: 0 0 15px var(--color__highlight);
 }
 
 .form__button {
-  height: 2em;
-  width: 80%;
+  height: 3em;
+  width: 45%;
+  padding:.5em;
   background-color: var(--color__base);
   font-weight: bold;
+}
+
+/* *Search Form on Desktop* */
+@media only screen and (min-width: 480px){
+  .form{
+    width:50%;
+  }
+
+  .form__button{
+    width:30%;
+  }
 }
