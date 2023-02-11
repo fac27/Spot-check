@@ -8,6 +8,11 @@ The usage of the page is simple:
 - Select the correct match from the search results
 - View data on cost-of-living, quality-of-living and crime rates in the area
 
+## Planning
+### Wireframe
+
+![alt wireframe](/imgs/wireframe__1.svg)
+
 ## Collaborating
 You can clone this repository with the following command:
 ```terminal
