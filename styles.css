@@ -79,3 +79,22 @@ body{
     width:30%;
   }
 }
+
+/* *Canvas and Classes within it* */
+.canvas{
+  overflow:auto;
+  margin-top:2rem;
+  margin-left:auto;
+  margin-right:auto;
+  height:60vh;
+  width:90%;
+}
+
+.canvas__paragraph{
+  height:3em;
+  padding:.5em;
+  margin-top:1.5rem;
+  border:1px solid hotpink;
+  white-space:normal;
+  text-overflow: clip;
+}
