@@ -90,11 +90,26 @@ body{
   width:90%;
 }
 
-.canvas__paragraph{
-  height:3em;
+.canvas__result-box{
+  height:5em;
   padding:.5em;
   margin-top:1.5rem;
   border:1px solid hotpink;
+}
+
+.canvas__result-box > *{
   white-space:normal;
-  text-overflow: clip;
+  text-overflow:initial;
+  overflow-wrap:break-word;
+}
+
+.canvas__result-button{
+  border:none;
+  background-color:var(--color__highlight);
+  color:var(--color__black);
+  height:1.5em;
+  font-weight:bold;
+  text-align:center;
+  padding:.5em;
+  border-radius:20px;
 }
