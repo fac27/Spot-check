@@ -22,6 +22,13 @@ const callTeleport = async (city) => {
 
 //fetch for Police API stored in variable here
 
+const callPolice = async () => {
+  let res = await fetch("https://data.police.uk/api/crimes-street/all-crime?lat=51.55&lng=-0.05&date=2022-01");
+  let resData = await res.json();
+  console.log(resData);
+  return resData;
+};
+
 //form submit button behavior
 const submitBtn = document.querySelector("#submit-button");
 submitBtn.addEventListener("click", (e) => {
@@ -38,4 +45,5 @@ submitBtn.addEventListener("click", (e) => {
   });
 
   //callPolice here
+  //callPolice();
 });
