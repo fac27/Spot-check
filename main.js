@@ -19,6 +19,7 @@ const fetchCityDetails = async (link) => {
   }
 };
 
+
 //functions to print data on screen
 
 //node-type function to render HTML !!
@@ -50,8 +51,12 @@ function cleanCanvas() {
 const printSearchResults = async (key) => {
   let resultBox = document.createElement("div");
   let paragraph = document.createElement("p");
+
   let content = document.createTextNode(key["matching_full_name"]);
+  
   let button = document.createElement("button");
+  button.innerText = 'See more';
+  button.addEventListener('click', fetchCityDetails(key['_links']['city:item'].href));
 
   canvas.appendChild(resultBox);
   resultBox.setAttribute("class", "canvas__result-box");
@@ -59,6 +64,7 @@ const printSearchResults = async (key) => {
   paragraph.setAttribute("class", "canvas__result-text");
   paragraph.appendChild(content);
   resultBox.appendChild(button);
+
   button.setAttribute("class", "canvas__result-button");
   button.setAttribute("type", "button");
 
@@ -76,6 +82,16 @@ const generateScores = async (url) => {
   let scoreCard = document.createElement("div");
   scoreCard.setAttribute("class", "canvas__score-card");
   canvas.append(scoreCard);
+
+//callaback to print crime data on screen
+const printPoliceResults = (occurences) => {
+  let sortedCrimes = '';
+  for (const [key, value] of Object.entries(occurences)) {
+    sortedCrimes += `<p>Crime: ${key} Occurrences: ${value}</p>`;
+  }
+  document.getElementById('crime-occurrences').innerHTML = sortedCrimes;
+};
+
 
   scores.forEach((score) => {
     let nameElement = document.createElement("p");
@@ -115,8 +131,17 @@ const callPolice = async () => {
     "https://data.police.uk/api/crimes-street/all-crime?lat=51.55&lng=-0.05&date=2022-01"
   );
   let resData = await res.json();
-  console.log(resData);
-  return resData;
+  // extract crime categories and put in resDataSort array
+  let resDataSort = []
+  for (let key in resData) {
+    resDataSort.push(resData[key].category)
+  }
+  // reduce the array to key value pairs of category and occurences
+  const occurrences = resDataSort.reduce(function (acc, curr) {
+    return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
+  }, {});
+  //return sorted response as object
+  return occurrences;
 };
 
 //form submit button behavior
@@ -136,8 +161,7 @@ submitBtn.addEventListener("click", (e) => {
     });
   });
 
-  //callPolice here
-  //callPolice();
+  callPolice().then(printPoliceResults);
 });
 
 //initiate page
