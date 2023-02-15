@@ -9,53 +9,111 @@ const fetchTeleport = async (city) => {
   return matches;
 };
 
-//fetch City details
+// fetch City details from the url out of search results
 const fetchCityDetails = async (link) => {
-  let result = await ( await fetch(link)).json();
-  console.dir(result);
-  return result;
-}
+  let result = await (await fetch(link)).json();
+  try {
+    printCityDetails(result["_links"]["city:urban_area"].href);
+  } catch {
+    console.error("printCityDetails did not find a reference to that city");
+  }
+};
 
 //functions to print data on screen
-function cleanCanvas() {
-  canvas.innerHTML = '';
 
-  let logoBox = document.createElement('div');
-  logoBox.setAttribute('class', 'canvas__logo-box');
-  let logo = document.createElement('img');
-  logo.setAttribute('alt', 'Spot Check logo');
+//node-type function to render HTML !!
+const printHTML = async (data) => {
+  const template = document.createElement("template");
+  template.innerHTML = data.trim();
+  return template.content.firstChild;
+};
+
+//render the landing page with Spot Check logo
+function cleanCanvas() {
+  canvas.innerHTML = "";
+
+  let logoBox = document.createElement("div");
+  logoBox.setAttribute("class", "canvas__logo-box");
+  let logo = document.createElement("img");
+  logo.setAttribute("alt", "Spot Check logo");
   logo.setAttribute(
     "src",
     "https://github.com/fac27/Spot-check/blob/main/imgs/spotcheck__logo--transparent.png?raw=true"
   );
-  logo.setAttribute('class', 'canvas__logo');
-  
+  logo.setAttribute("class", "canvas__logo");
+
   canvas.append(logoBox);
   logoBox.append(logo);
 }
 
+//render search results from Teleport
 const printSearchResults = async (key) => {
-  let resultBox = document.createElement('div');
+  let resultBox = document.createElement("div");
   let paragraph = document.createElement("p");
-  let content = document.createTextNode(key['matching_full_name']);
-  let button = document.createElement('button');
-  
-  button.innerText = 'See more';
-  button.addEventListener('click', fetchCityDetails(key['_links']['city:item'].href));
+  let content = document.createTextNode(key["matching_full_name"]);
+  let button = document.createElement("button");
 
   canvas.appendChild(resultBox);
   resultBox.setAttribute("class", "canvas__result-box");
   resultBox.appendChild(paragraph);
-  paragraph.setAttribute('class', 'canvas__result-text');
+  paragraph.setAttribute("class", "canvas__result-text");
   paragraph.appendChild(content);
   resultBox.appendChild(button);
-  button.setAttribute('class', 'canvas__result-button');
-};  
+  button.setAttribute("class", "canvas__result-button");
+  button.setAttribute("type", "button");
 
+  button.innerText = "See more";
+  button.addEventListener("click", () =>
+    fetchCityDetails(key["_links"]["city:item"]["href"])
+  );
+};
+
+//render city's scores in a grid
+const generateScores = async (url) => {
+  let result = await (await fetch(url)).json();
+  let scores = await result.categories;
+
+  let scoreCard = document.createElement("div");
+  scoreCard.setAttribute("class", "canvas__score-card");
+  canvas.append(scoreCard);
+
+  scores.forEach((score) => {
+    let nameElement = document.createElement("p");
+    let nameText = document.createTextNode(`${score.name}:`);
+    nameElement.append(nameText);
+    nameElement.setAttribute("class", "city__entry");
+
+    let scoreParagraph = document.createElement("p");
+    let scoreText = document.createTextNode(
+      `${Math.floor(score["score_out_of_10"])}/10`
+    );
+    scoreParagraph.append(scoreText);
+    scoreParagraph.setAttribute("class", "city__value");
+
+    scoreCard.append(nameElement, scoreParagraph);
+  });
+};
+
+//render city stats for selected match
+const printCityDetails = async (url) => {
+  let city = await (await fetch(url)).json();
+  canvas.innerHTML = "";
+
+  printHTML(`
+  <div>
+  <h2>${city["full_name"]}</h2>
+  <p>Mayor: ${city.mayor}</p>
+  </div>
+  `).then((element) => canvas.appendChild(element));
+
+  generateScores(`${url}scores`);
+};
 //fetch for Police API stored in variable here
 
 const callPolice = async () => {
-  let res = await fetch("https://data.police.uk/api/crimes-street/all-crime?lat=51.55&lng=-0.05&date=2022-01");
+  let res = await fetch(
+    "https://data.police.uk/api/crimes-street/all-crime?lat=51.55&lng=-0.05&date=2022-01"
+  );
   let resData = await res.json();
   console.log(resData);
   return resData;
@@ -68,7 +126,7 @@ submitBtn.addEventListener("click", (e) => {
   let searchInput = document.querySelector("#city-input").value;
   let ukRegex = new RegExp(/(United Kingdom)/);
 
-  canvas.innerHTML = '';
+  canvas.innerHTML = "";
 
   fetchTeleport(searchInput).then((matches) => {
     Object.values(matches).forEach((match) => {
@@ -84,3 +142,5 @@ submitBtn.addEventListener("click", (e) => {
 
 //initiate page
 cleanCanvas();
+
+// printCityDetails("https://api.teleport.org/api/urban_areas/slug:london/");

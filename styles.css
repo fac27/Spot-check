@@ -89,26 +89,26 @@ body {
   width: 90%;
 }
 
-.canvas__logo-box{
-  height:250px;
-  width:250px;
-  border-radius:50%;
-  margin-top:5rem;
-  margin-left:auto;
-  margin-right:auto;
-  background-color:var(--color__base);
+.canvas__logo-box {
+  height: 250px;
+  width: 250px;
+  border-radius: 50%;
+  margin-top: 5rem;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: var(--color__base);
 }
 
-.canvas__logo{
-  height:100%;
-  object-fit:cover;
+.canvas__logo {
+  height: 100%;
+  object-fit: cover;
 }
 
 .canvas__result-box {
   height: 5em;
-  width:90%;
-  margin-left:auto;
-  margin-right:auto;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0.5em;
   margin-top: 1.5rem;
   background-color: var(--color__base);
@@ -135,9 +135,28 @@ body {
   font-weight: bold;
   float: right;
   text-align: center;
-  position:absolute;
-  bottom:.5em;
-  right:.5em;
+  position: absolute;
+  bottom: 0.5em;
+  right: 0.5em;
+}
+
+.canvas__score-card {
+  display: grid;
+  margin-left:auto;
+  margin-right:auto;
+  grid-template-columns: 3fr 1fr;
+  align-items: center;
+}
+
+.city__entry {
+  grid-column: 1;
+  height:1em;
+}
+
+.city__value {
+  grid-column: 2;
+  text-align:left;
+  height:1em;
 }
 
 /* *Canvas on Desktop* */
