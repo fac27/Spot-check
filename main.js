@@ -14,6 +14,7 @@ const fetchCityDetails = async (link) => {
   let result = await (await fetch(link)).json();
   try {
     printCityDetails(result["_links"]["city:urban_area"].href);
+    callPolice().then(printPoliceResults);
   } catch {
     console.error("printCityDetails did not find a reference to that city");
   }
@@ -51,37 +52,51 @@ function cleanCanvas() {
 const printSearchResults = async (key) => {
   let resultBox = document.createElement("div");
   let paragraph = document.createElement("p");
-
   let content = document.createTextNode(key["matching_full_name"]);
-  
   let button = document.createElement("button");
-  button.innerText = 'See more';
-  button.addEventListener('click', fetchCityDetails(key['_links']['city:item'].href));
 
+  
   canvas.appendChild(resultBox);
   resultBox.setAttribute("class", "canvas__result-box");
   resultBox.appendChild(paragraph);
   paragraph.setAttribute("class", "canvas__result-text");
   paragraph.appendChild(content);
   resultBox.appendChild(button);
-
+  
   button.setAttribute("class", "canvas__result-button");
   button.setAttribute("type", "button");
-
+  
   button.innerText = "See more";
-  button.addEventListener("click", () =>
-    fetchCityDetails(key["_links"]["city:item"]["href"])
-  );
+  button.addEventListener("click", (e) => {
+    // e.preventDefault();
+    fetchCityDetails(key["_links"]["city:item"]["href"]);
+  });
 };
 
 //render city's scores in a grid
 const generateScores = async (url) => {
   let result = await (await fetch(url)).json();
   let scores = await result.categories;
-
   let scoreCard = document.createElement("div");
   scoreCard.setAttribute("class", "canvas__score-card");
+  
+    scores.forEach(score => {
+      let key = document.createElement('p');
+      let keyText = document.createTextNode(`${score.name}:`);
+      key.setAttribute('class', 'city__entry')
+      key.append(keyText);
+  
+      let scoring = document.createElement('p');
+      let scoringText = document.createTextNode(`${Math.floor(score['score_out_of_10'])}/10`);
+      scoring.setAttribute('class', 'city__value');
+      scoring.append(scoringText);
+      
+      scoreCard.append(key, scoring);
+    })
+    
   canvas.append(scoreCard);
+  console.dir(result.categories);
+};
 
 //callaback to print crime data on screen
 const printPoliceResults = (occurences) => {
@@ -90,7 +105,7 @@ const printPoliceResults = (occurences) => {
     sortedCrimes += `<p>Crime: ${key} Occurrences: ${value}</p>`;
   }
   document.getElementById('crime-occurrences').innerHTML = sortedCrimes;
-};
+
 
 
   scores.forEach((score) => {
@@ -161,10 +176,8 @@ submitBtn.addEventListener("click", (e) => {
     });
   });
 
-  callPolice().then(printPoliceResults);
 });
 
 //initiate page
 cleanCanvas();
 
-// printCityDetails("https://api.teleport.org/api/urban_areas/slug:london/");
