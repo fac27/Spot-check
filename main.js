@@ -152,9 +152,15 @@ const callPolice = async () => {
     resDataSort.push(resData[key].category)
   }
   // reduce the array to key value pairs of category and occurences
-  const occurrences = resDataSort.reduce(function (acc, curr) {
-    return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
-  }, {});
+  let occurrences = {};
+  for (let i = 0; i < resDataSort.length; i++) {
+    let element = resDataSort[i];
+    if (occurrences[element]) {
+      occurrences[element]++;
+    } else {
+      occurrences[element] = 1;
+    }
+  }
   //return sorted response as object
   return occurrences;
 };
