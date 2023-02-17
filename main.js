@@ -14,7 +14,9 @@ const fetchCityDetails = async (link) => {
   let result = await (await fetch(link)).json();
   try {
     printCityDetails(result["_links"]["city:urban_area"].href);
-    callPolice().then(printPoliceResults);
+    let lat = result.location.latlon.latitude;
+    let lon = result.location.latlon.longitude;
+    callPolice(lat, lon).then(printPoliceResults);
   } catch {
     console.error("printCityDetails did not find a reference to that city");
   }
@@ -141,9 +143,9 @@ const printCityDetails = async (url) => {
 };
 //fetch for Police API stored in variable here
 
-const callPolice = async () => {
+const callPolice = async (lat, lon) => {
   let res = await fetch(
-    "https://data.police.uk/api/crimes-street/all-crime?lat=51.55&lng=-0.05&date=2022-01"
+    `https://data.police.uk/api/crimes-street/all-crime?lat=${lat}&lng=${lon}&date=2022-01`
   );
   let resData = await res.json();
   // extract crime categories and put in resDataSort array
