@@ -14,9 +14,15 @@ const fetchCityDetails = async (link) => {
   let result = await (await fetch(link)).json();
   try {
     printCityDetails(result["_links"]["city:urban_area"].href);
-    callPolice().then(printPoliceResults);
   } catch {
     console.error("printCityDetails did not find a reference to that city");
+  }
+  try {
+    let lat = result.location.latlon.latitude;
+    let lon = result.location.latlon.longitude;
+    callPolice(lat, lon).then(printPoliceResults);
+  } catch {
+    console.error("Unable to find that city");
   }
 };
 
@@ -55,17 +61,17 @@ const printSearchResults = async (key) => {
   let content = document.createTextNode(key["matching_full_name"]);
   let button = document.createElement("button");
 
-  
+
   canvas.appendChild(resultBox);
   resultBox.setAttribute("class", "canvas__result-box");
   resultBox.appendChild(paragraph);
   paragraph.setAttribute("class", "canvas__result-text");
   paragraph.appendChild(content);
   resultBox.appendChild(button);
-  
+
   button.setAttribute("class", "canvas__result-button");
   button.setAttribute("type", "button");
-  
+
   button.innerText = "See more";
   button.addEventListener("click", (e) => {
     // e.preventDefault();
@@ -79,35 +85,39 @@ const generateScores = async (url) => {
   let scores = await result.categories;
   let scoreCard = document.createElement("div");
   scoreCard.setAttribute("class", "canvas__score-card");
-  
-    scores.forEach(score => {
-      let key = document.createElement('p');
-      let keyText = document.createTextNode(`${score.name}:`);
-      key.setAttribute('class', 'city__entry')
-      key.append(keyText);
-  
-      let scoring = document.createElement('p');
-      let scoringText = document.createTextNode(`${Math.floor(score['score_out_of_10'])}/10`);
-      scoring.setAttribute('class', 'city__value');
-      scoring.append(scoringText);
-      
-      scoreCard.append(key, scoring);
-    })
-    
+
+  scores.forEach(score => {
+    let key = document.createElement('p');
+    let keyText = document.createTextNode(`${score.name}:`);
+    key.setAttribute('class', 'city__entry')
+    key.append(keyText);
+
+    let scoring = document.createElement('p');
+    let scoringText = document.createTextNode(`${Math.floor(score['score_out_of_10'])}/10`);
+    scoring.setAttribute('class', 'city__value');
+    scoring.append(scoringText);
+
+    scoreCard.append(key, scoring);
+  })
+
   canvas.append(scoreCard);
   console.dir(result.categories);
 };
 
 //callaback to print crime data on screen
 const printPoliceResults = (occurences) => {
-  let sortedCrimes = '';
-  for (const [key, value] of Object.entries(occurences)) {
-    sortedCrimes += `<p>Crime: ${key} Occurrences: ${value}</p>`;
+  try {
+    let sortedCrimes = '';
+    for (const [key, value] of Object.entries(occurences)) {
+      sortedCrimes += `<p>Crime: ${key} Occurrences: ${value}</p>`;
+    }
+    document.getElementById('crime-occurrences').innerHTML = sortedCrimes;
+  } catch {
+    console.error("Unable to retrieve data")
   }
-  document.getElementById('crime-occurrences').innerHTML = sortedCrimes;
 
 
-
+  
   scores.forEach((score) => {
     let nameElement = document.createElement("p");
     let nameText = document.createTextNode(`${score.name}:`);
@@ -141,22 +151,27 @@ const printCityDetails = async (url) => {
 };
 //fetch for Police API stored in variable here
 
-const callPolice = async () => {
+const callPolice = async (lat, lon) => {
   let res = await fetch(
-    "https://data.police.uk/api/crimes-street/all-crime?lat=51.55&lng=-0.05&date=2022-01"
+    `https://data.police.uk/api/crimes-street/all-crime?lat=${lat}&lng=${lon}&date=2022-01`
   );
   let resData = await res.json();
   // extract crime categories and put in resDataSort array
-  let resDataSort = []
-  for (let key in resData) {
-    resDataSort.push(resData[key].category)
+  try {
+    let resDataSort = []
+    for (let key in resData) {
+      resDataSort.push(resData[key].category)
+    }
+    // reduce the array to key value pairs of category and occurences
+    const occurrences = resDataSort.reduce(function (acc, curr) {
+      return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
+    }, {});
+    //return sorted response as object
+    return occurrences;
+  } catch {
+    console.error("Unable to find crime data at that location")
   }
-  // reduce the array to key value pairs of category and occurences
-  const occurrences = resDataSort.reduce(function (acc, curr) {
-    return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
-  }, {});
-  //return sorted response as object
-  return occurrences;
+
 };
 
 //form submit button behavior
