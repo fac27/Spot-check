@@ -33,11 +33,16 @@ const fetchCityDetails = async (link) => {
   let result = await (await fetch(link)).json();
   try {
     printCityDetails(result["_links"]["city:urban_area"].href);
-    console.dir(result["_links"]["city:urban_area"].href);
-    callPolice().then(printPoliceResults);
   } catch {
     window.alert("No data available for that city");
     console.error("printiCityDetails did not find a reference for this city");
+  }
+  try {
+    let lat = result.location.latlon.latitude;
+    let lon = result.location.latlon.longitude;
+    callPolice(lat, lon).then(printPoliceResults);
+  } catch {
+    console.error("Unable to find that city");
   }
 };
 
@@ -97,6 +102,7 @@ const generateScores = async (url) => {
   let result = await (await fetch(url)).json();
   let scores = await result.categories;
   let scoreCard = document.createElement("div");
+
   scoreCard.classList.add("canvas__score-card", "stack-sm");
 
   scores.forEach((score) => {
@@ -120,12 +126,18 @@ const generateScores = async (url) => {
 
 //callaback to print crime data on screen
 const printPoliceResults = (occurences) => {
-  let sortedCrimes = "";
-  for (const [key, value] of Object.entries(occurences)) {
-    sortedCrimes += `<p>Crime: ${key} Occurrences: ${value}</p>`;
-  }
-  document.getElementById("crime-occurrences").innerHTML = sortedCrimes;
 
+  try {
+    let sortedCrimes = '';
+    for (const [key, value] of Object.entries(occurences)) {
+      sortedCrimes += `<p>Crime: ${key} Occurrences: ${value}</p>`;
+    }
+    document.getElementById('crime-occurrences').innerHTML = sortedCrimes;
+  } catch {
+    console.error("Unable to retrieve data")
+  }
+
+  
   scores.forEach((score) => {
     let nameElement = document.createElement("p");
     let nameText = document.createTextNode(`${score.name}:`);
@@ -158,9 +170,10 @@ const printCityDetails = async (url) => {
   generateScores(`${url}scores`);
 };
 
+//boolean to check if a fetch call can be made
 let canSearch =
   document.querySelector(".form__input").value.length != 0 &&
-  !submitBtn.classList.contains("form__button--inactive")
+  !submitBtn.classList.contains("form__button--inactive")   //this is always returning false at the moment :(
 ;
 
 function startSearch() {
