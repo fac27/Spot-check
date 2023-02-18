@@ -9,8 +9,8 @@
   /* These are absolutely random colors, apart from */
   /* black and white. Those are meant to be easier  */
   /* on the eyes than full-on black and white */
-  --color__base: #cf8f72;
-  --color__highlight: #0bb64e;
+  --color__base: #0A8754;
+  --color__highlight: #508CA4;
   --color__black: #070707;
   --color__white: #f7f7f7;
 }
@@ -60,12 +60,20 @@ body {
   box-shadow: 0 0 15px var(--color__highlight);
 }
 
+.form__input:disabled{
+  display:none;
+}
+
 .form__button {
   height: 3em;
   width: 45%;
   padding: 0.5em;
-  background-color: var(--color__base);
+  background-color: var(--color__highlight);
   font-weight: bold;
+}
+
+.form__button--inactive{
+  background-color:var(--color__base)
 }
 
 /* *Search Form on Desktop* */

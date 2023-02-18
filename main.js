@@ -9,17 +9,37 @@ const fetchTeleport = async (city) => {
   return matches;
 };
 
+//fetch for Police API stored in variable here
+const callPolice = async () => {
+  let res = await fetch(
+    "https://data.police.uk/api/crimes-street/all-crime?lat=51.55&lng=-0.05&date=2022-01"
+  );
+  let resData = await res.json();
+  // extract crime categories and put in resDataSort array
+  let resDataSort = [];
+  for (let key in resData) {
+    resDataSort.push(resData[key].category);
+  }
+  // reduce the array to key value pairs of category and occurences
+  const occurrences = resDataSort.reduce(function (acc, curr) {
+    return acc[curr] ? ++acc[curr] : (acc[curr] = 1), acc;
+  }, {});
+  //return sorted response as object
+  return occurrences;
+};
+
 // fetch City details from the url out of search results
 const fetchCityDetails = async (link) => {
   let result = await (await fetch(link)).json();
   try {
     printCityDetails(result["_links"]["city:urban_area"].href);
+    console.dir(result["_links"]["city:urban_area"].href);
     callPolice().then(printPoliceResults);
   } catch {
-    console.error("printCityDetails did not find a reference to that city");
+    window.alert("No data available for that city");
+    console.error("printiCityDetails did not find a reference for this city");
   }
 };
-
 
 //functions to print data on screen
 
@@ -55,20 +75,19 @@ const printSearchResults = async (key) => {
   let content = document.createTextNode(key["matching_full_name"]);
   let button = document.createElement("button");
 
-  
   canvas.appendChild(resultBox);
   resultBox.setAttribute("class", "canvas__result-box");
   resultBox.appendChild(paragraph);
-  paragraph.setAttribute("class", "canvas__result-text");
+  paragraph.classList.add("canvas__result-text", "stack-md");
   paragraph.appendChild(content);
   resultBox.appendChild(button);
-  
+
   button.setAttribute("class", "canvas__result-button");
   button.setAttribute("type", "button");
-  
+
   button.innerText = "See more";
   button.addEventListener("click", (e) => {
-    // e.preventDefault();
+    console.log(key);
     fetchCityDetails(key["_links"]["city:item"]["href"]);
   });
 };
@@ -78,35 +97,34 @@ const generateScores = async (url) => {
   let result = await (await fetch(url)).json();
   let scores = await result.categories;
   let scoreCard = document.createElement("div");
-  scoreCard.setAttribute("class", "canvas__score-card");
-  
-    scores.forEach(score => {
-      let key = document.createElement('p');
-      let keyText = document.createTextNode(`${score.name}:`);
-      key.setAttribute('class', 'city__entry')
-      key.append(keyText);
-  
-      let scoring = document.createElement('p');
-      let scoringText = document.createTextNode(`${Math.floor(score['score_out_of_10'])}/10`);
-      scoring.setAttribute('class', 'city__value');
-      scoring.append(scoringText);
-      
-      scoreCard.append(key, scoring);
-    })
-    
+  scoreCard.classList.add("canvas__score-card", "stack-sm");
+
+  scores.forEach((score) => {
+    let key = document.createElement("p");
+    let keyText = document.createTextNode(`${score.name}:`);
+    key.setAttribute("class", "city__entry");
+    key.append(keyText);
+
+    let scoring = document.createElement("p");
+    let scoringText = document.createTextNode(
+      `${Math.floor(score["score_out_of_10"])}/10`
+    );
+    scoring.setAttribute("class", "city__value");
+    scoring.append(scoringText);
+
+    scoreCard.append(key, scoring);
+  });
+
   canvas.append(scoreCard);
-  console.dir(result.categories);
 };
 
 //callaback to print crime data on screen
 const printPoliceResults = (occurences) => {
-  let sortedCrimes = '';
+  let sortedCrimes = "";
   for (const [key, value] of Object.entries(occurences)) {
     sortedCrimes += `<p>Crime: ${key} Occurrences: ${value}</p>`;
   }
-  document.getElementById('crime-occurrences').innerHTML = sortedCrimes;
-
-
+  document.getElementById("crime-occurrences").innerHTML = sortedCrimes;
 
   scores.forEach((score) => {
     let nameElement = document.createElement("p");
@@ -139,45 +157,48 @@ const printCityDetails = async (url) => {
 
   generateScores(`${url}scores`);
 };
-//fetch for Police API stored in variable here
 
-const callPolice = async () => {
-  let res = await fetch(
-    "https://data.police.uk/api/crimes-street/all-crime?lat=51.55&lng=-0.05&date=2022-01"
-  );
-  let resData = await res.json();
-  // extract crime categories and put in resDataSort array
-  let resDataSort = []
-  for (let key in resData) {
-    resDataSort.push(resData[key].category)
+let canSearch =
+  document.querySelector(".form__input").value.length != 0 &&
+  !submitBtn.classList.contains("form__button--inactive")
+;
+
+function startSearch() {
+  let searchBox = document.querySelector("#city-input");
+
+  if (submitBtn.classList.contains("form__button--inactive")) {
+    submitBtn.classList.remove("form__button--inactive");
+    cleanCanvas();
+    submitBtn.innerText = "Search";
+    searchBox.disabled = false;
+  } else {
+    let ukRegex = new RegExp(/(United Kingdom)/);
+    let searchInput = document.querySelector("#city-input").value;
+
+    canvas.innerHTML = "";
+
+    fetchTeleport(searchInput).then((matches) => {
+      Object.values(matches).forEach((match) => {
+        if (ukRegex.test(match["matching_full_name"])) {
+          printSearchResults(match);
+        }
+      });
+    });
+
+    submitBtn.classList.add("form__button--inactive");
+    submitBtn.innerText = "Back ";
+    searchBox.disabled = true;
+    searchBox.value = "";
   }
-  // reduce the array to key value pairs of category and occurences
-  const occurrences = resDataSort.reduce(function (acc, curr) {
-    return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
-  }, {});
-  //return sorted response as object
-  return occurrences;
-};
+}
 
 //form submit button behavior
 const submitBtn = document.querySelector("#submit-button");
 submitBtn.addEventListener("click", (e) => {
   e.preventDefault();
-  let searchInput = document.querySelector("#city-input").value;
-  let ukRegex = new RegExp(/(United Kingdom)/);
-
-  canvas.innerHTML = "";
-
-  fetchTeleport(searchInput).then((matches) => {
-    Object.values(matches).forEach((match) => {
-      if (ukRegex.test(match["matching_full_name"])) {
-        printSearchResults(match);
-      }
-    });
-  });
-
+  canSearch ? startSearch : window.alert("please enter a city");
+  console.log(canSearch);
 });
 
 //initiate page
 cleanCanvas();
-
