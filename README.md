@@ -11,6 +11,12 @@ The usage of the page is simple:
 - Select the correct match from the search results
 - View data on cost-of-living, quality-of-living and crime rates in the area
 
+### User Stories
+Spot-check pulls data from two separate APIs to provide information to the user on the city requested. Because delays can happen when fetching this data, it's important to provide feedback to the user on whether there is work happening in the background or if anything has gone wrong.
+
+- An impatient user wants to see some indication that data is loading
+- A confused user wants to be told when something goes wrong
+
 ## Planning
 ### Wireframe
 
