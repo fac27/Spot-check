@@ -1,4 +1,5 @@
 const canvas = document.querySelector("#canvas");
+const crimeOccurrences = document.querySelector("#crime-occurrences");
 
 // fetch for Teleport stored in variable here
 const fetchTeleport = async (city) => {
@@ -105,34 +106,32 @@ const generateScores = async (url) => {
 };
 
 //callaback to print crime data on screen
-const printPoliceResults = (occurences) => {
+const printPoliceResults = (occurrences) => {
   try {
-    let sortedCrimes = '';
-    for (const [key, value] of Object.entries(occurences)) {
-      sortedCrimes += `<p>Crime: ${key} Occurrences: ${value}</p>`;
+    let crimeLabel = document.createElement("div");
+    let crimeLabelpara = document.createElement("p");
+    crimeLabelpara.innerHTML = "Crime occurrences in this area:";
+    crimeOccurrences.appendChild(crimeLabel);
+    crimeLabel.appendChild(crimeLabelpara);
+
+    let crimeScoreCard = document.createElement("div");
+    crimeScoreCard.setAttribute("class", "canvas__score-card");
+    crimeOccurrences.appendChild(crimeScoreCard);
+
+    for (const [key, value] of Object.entries(occurrences)) {
+      let crimeEntry = document.createElement("p");
+      crimeEntry.setAttribute("class", "city__entry");
+      crimeEntry.innerHTML = key;
+      crimeScoreCard.appendChild(crimeEntry);
+
+      let crimeValue = document.createElement("p");
+      crimeValue.setAttribute("class", "city__value");
+      crimeValue.innerHTML = value;
+      crimeScoreCard.appendChild(crimeValue);
     }
-    document.getElementById('crime-occurrences').innerHTML = sortedCrimes;
   } catch {
     console.error("Unable to retrieve data")
   }
-
-
-  
-  scores.forEach((score) => {
-    let nameElement = document.createElement("p");
-    let nameText = document.createTextNode(`${score.name}:`);
-    nameElement.append(nameText);
-    nameElement.setAttribute("class", "city__entry");
-
-    let scoreParagraph = document.createElement("p");
-    let scoreText = document.createTextNode(
-      `${Math.floor(score["score_out_of_10"])}/10`
-    );
-    scoreParagraph.append(scoreText);
-    scoreParagraph.setAttribute("class", "city__value");
-
-    scoreCard.append(nameElement, scoreParagraph);
-  });
 };
 
 //render city stats for selected match
