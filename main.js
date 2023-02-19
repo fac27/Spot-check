@@ -121,7 +121,7 @@ const printPoliceResults = (occurrences) => {
     for (const [key, value] of Object.entries(occurrences)) {
       let crimeEntry = document.createElement("p");
       crimeEntry.setAttribute("class", "city__entry");
-      crimeEntry.innerHTML = key;
+      crimeEntry.innerHTML = `${key}:`;
       crimeScoreCard.appendChild(crimeEntry);
 
       let crimeValue = document.createElement("p");
