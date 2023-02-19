@@ -170,12 +170,6 @@ const printCityDetails = async (url) => {
   generateScores(`${url}scores`);
 };
 
-//boolean to check if a fetch call can be made
-let canSearch =
-  document.querySelector(".form__input").value.length != 0 &&
-  !submitBtn.classList.contains("form__button--inactive")   //this is always returning false at the moment :(
-;
-
 function startSearch() {
   let searchBox = document.querySelector("#city-input");
 
@@ -209,8 +203,15 @@ function startSearch() {
 const submitBtn = document.querySelector("#submit-button");
 submitBtn.addEventListener("click", (e) => {
   e.preventDefault();
-  canSearch ? startSearch : window.alert("please enter a city");
-  console.log(canSearch);
+  if (document.getElementById('city-input').value.length !== 0) {
+    startSearch();
+  } else {
+    if(!submitBtn.classList.contains('form__button--inactive')){
+      window.alert("please enter a city");
+    }else{
+      startSearch();
+    }
+  }
 });
 
 //initiate page
