@@ -161,10 +161,19 @@ const callPolice = async (lat, lon) => {
     for (let key in resData) {
       resDataSort.push(resData[key].category)
     }
+
     // reduce the array to key value pairs of category and occurences
-    const occurrences = resDataSort.reduce(function (acc, curr) {
+    const firstOccurrences = resDataSort.reduce(function (acc, curr) {
       return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
     }, {});
+
+    //capitalise first letter in keys only
+    let occurrences = {};
+    for (let key in firstOccurrences) {
+      let capitalizedKey = key.charAt(0).toUpperCase() + key.slice(1);
+      occurrences[capitalizedKey] = firstOccurrences[key];
+    }
+
     //return sorted response as object
     return occurrences;
   } catch {
