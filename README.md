@@ -44,7 +44,7 @@ i.e.: we can see the value attributed to a variable at the time of the breaker.
 
 ### JavaScript
 - [x] Write code that executes asynchronously
-- [ ] Use callbacks to access values that aren't available synchronously
+- [x] Use callbacks to access values that aren't available synchronously
 - [x] Use promises to access values that aren't available synchronously
 - [x] Use fetch method to make HTTP requests and receive responses
 - [ ] Configure the options argument of the fetch method to make GET and POST requests
@@ -54,7 +54,7 @@ i.e.: we can see the value attributed to a variable at the time of the breaker.
 ### DOM
 - [x] Access DOM nodes using a variety of selectors
 - [x] Add and remove DOM nodes to change the content on the page
-- [ ] Toggle the classes applied to DOM nodes to change their CSS properties
+- [x] Toggle the classes applied to DOM nodes to change their CSS properties
 
 ### Design
 - [ ] Use consistent layout and spacing
