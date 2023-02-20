@@ -227,7 +227,9 @@ submitBtn.addEventListener("click", (e) => {
   if (document.getElementById('city-input').value.length !== 0) {
     // show the loading gif image
     gifFig.style.display = "flex";
-    
+    while (canvas.firstChild) {
+      canvas.removeChild(canvas.firstChild);
+    }
     // delay the execution of startSearch() by at least 2 seconds
     setTimeout(() => {
       startSearch();
