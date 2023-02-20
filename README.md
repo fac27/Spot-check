@@ -57,8 +57,8 @@ i.e.: we can see the value attributed to a variable at the time of the breaker.
 - [x] Toggle the classes applied to DOM nodes to change their CSS properties
 
 ### Design
-- [ ] Use consistent layout and spacing
-- [ ] Follow a spacing guideline to give our app a consistent feel
+- [x] Use consistent layout and spacing
+- [x] Follow a spacing guideline to give our app a consistent feel
 
 ### Developer Toolkit
 - [x] Debug client side JS in our web browser
