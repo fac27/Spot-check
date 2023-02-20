@@ -18,14 +18,14 @@ const callPolice = async (lat, lon) => {
   let resData = await res.json();
   // extract crime categories and put in resDataSort array
   try {
-    let resDataSort = []
+    let resDataSort = [];
     for (let key in resData) {
-      resDataSort.push(resData[key].category)
+      resDataSort.push(resData[key].category);
     }
 
     // reduce the array to key value pairs of category and occurences
     const firstOccurrences = resDataSort.reduce(function (acc, curr) {
-      return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
+      return acc[curr] ? ++acc[curr] : (acc[curr] = 1), acc;
     }, {});
 
     //capitalise first letter in keys only
@@ -38,7 +38,7 @@ const callPolice = async (lat, lon) => {
     //return sorted response as object
     return occurrences;
   } catch {
-    console.error("Unable to find crime data at that location")
+    console.error("Unable to find crime data at that location");
   }
 };
 
@@ -106,7 +106,6 @@ const printSearchResults = async (key) => {
 
   button.innerText = "See more";
   button.addEventListener("click", (e) => {
-    console.log(key);
     fetchCityDetails(key["_links"]["city:item"]["href"]);
   });
 };
@@ -115,7 +114,7 @@ const printSearchResults = async (key) => {
 const generateScores = async (url) => {
   let result = await (await fetch(url)).json();
   let scores = await result.categories;
-  let scoreCard = document.createElement("div");
+  let scoreCard = document.getElementById("score-card");
 
   scoreCard.classList.add("canvas__score-card", "stack-sm");
 
@@ -142,28 +141,29 @@ const generateScores = async (url) => {
 const printPoliceResults = (occurrences) => {
   try {
     let crimeLabel = document.createElement("div");
+    crimeLabel.classList.add('crime-score-card__title');
     let crimeLabelpara = document.createElement("p");
     crimeLabelpara.innerHTML = "Crime occurrences in this area:";
-    crimeOccurrences.appendChild(crimeLabel);
-    crimeLabel.appendChild(crimeLabelpara);
-
+    
     let crimeScoreCard = document.createElement("div");
     crimeScoreCard.setAttribute("class", "canvas__score-card");
-    crimeOccurrences.appendChild(crimeScoreCard);
-
+    canvas.appendChild(crimeScoreCard);
+    crimeScoreCard.appendChild(crimeLabel);
+    crimeLabel.appendChild(crimeLabelpara);
+    
     for (const [key, value] of Object.entries(occurrences)) {
       let crimeEntry = document.createElement("p");
       crimeEntry.setAttribute("class", "city__entry");
       crimeEntry.innerHTML = `${key}:`;
       crimeScoreCard.appendChild(crimeEntry);
-
+      
       let crimeValue = document.createElement("p");
       crimeValue.setAttribute("class", "city__value");
       crimeValue.innerHTML = value;
       crimeScoreCard.appendChild(crimeValue);
     }
   } catch {
-    console.error("Unable to retrieve data")
+    console.error("Unable to retrieve data");
   }
 };
 
@@ -173,9 +173,9 @@ const printCityDetails = async (url) => {
   canvas.innerHTML = "";
 
   printHTML(`
-  <div>
-  <h2>${city["full_name"]}</h2>
-  <p>Mayor: ${city.mayor}</p>
+  <div id='score-card'>
+  <h2 class='city__entry--title'>${city["full_name"]}</h2>
+  <p class='city__entry--subtitle'>Mayor: ${city.mayor}</p>
   </div>
   `).then((element) => canvas.appendChild(element));
 
@@ -216,12 +216,12 @@ function startSearch() {
 const submitBtn = document.querySelector("#submit-button");
 submitBtn.addEventListener("click", (e) => {
   e.preventDefault();
-  if (document.getElementById('city-input').value.length !== 0) {
+  if (document.getElementById("city-input").value.length !== 0) {
     startSearch();
   } else {
-    if(!submitBtn.classList.contains('form__button--inactive')){
+    if (!submitBtn.classList.contains("form__button--inactive")) {
       window.alert("please enter a city");
-    }else{
+    } else {
       startSearch();
     }
   }

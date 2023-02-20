@@ -89,6 +89,9 @@ body {
 
 /* *Canvas and Classes within it* */
 .canvas {
+  display: flex;
+  flex-flow:column nowrap;
+  align-items:center;
   overflow: auto;
   margin-top: 2rem;
   margin-left: auto;
@@ -126,12 +129,12 @@ body {
 }
 
 .canvas__result-text {
-  margin-top: 0.5em;
+  margin-top: 0em;
   max-width: 25ch;
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 3;
 }
 
 .canvas__result-button {
@@ -164,16 +167,31 @@ body {
   height:1em;
 }
 
+.city__entry--subtitle, .city__entry--subtitle{
+  grid-column: span 2;
+}
+
 .city__value {
   grid-column: 2;
   text-align:right;
   height:1em;
 }
 
+.crime-score-card__title{
+  grid-column: span 2;
+  font-weight:bold;
+}
+
 /* *Canvas on Desktop* */
 @media screen and (min-width: 480px) {
-  .canvas__result-box {
-    width: 70%;
+  .canvas {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: baseline;
+    justify-content: space-around;
+  }
+  .canvas__score-card{
+    width:45%;
   }
 
   .canvas__paragraph {
