@@ -41,6 +41,19 @@ body {
   }
 }
 
+/* *Loading gif* */
+
+#gif-load {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+}
+
+#gif-load img {
+  width: auto;
+  height: 10vw;
+}
+
 /* *Search Form* */
 .form {
   height: 150px;

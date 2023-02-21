@@ -1,5 +1,6 @@
 const canvas = document.querySelector("#canvas");
 const crimeOccurrences = document.querySelector("#crime-occurrences");
+const gifFig = document.querySelector("#gif-load");
 
 // fetch for Teleport stored in variable here
 const fetchTeleport = async (city) => {
@@ -172,14 +173,20 @@ const printCityDetails = async (url) => {
   let city = await (await fetch(url)).json();
   canvas.innerHTML = "";
 
-  printHTML(`
+  // show the loading gif image
+  gifFig.style.display = "flex";
+  // delay the printHTML & generateScores by at least 2 seconds
+  setTimeout(() => {
+    // hide loading gif before proceeding with the rest of the code
+    gifFig.style.display = "none";
+    printHTML(`
   <div id='score-card'>
   <h2 class='city__entry--title'>${city["full_name"]}</h2>
   <p class='city__entry--subtitle'>Mayor: ${city.mayor}</p>
   </div>
   `).then((element) => canvas.appendChild(element));
-
   generateScores(`${url}scores`);
+  }, 2000);
 };
 
 //edit-form-behaviour
@@ -200,6 +207,8 @@ function startSearch() {
     fetchTeleport(searchInput).then((matches) => {
       Object.values(matches).forEach((match) => {
         if (ukRegex.test(match["matching_full_name"])) {
+          // hide loading gif before printSearchResults(match) is called
+          gifFig.style.display = "none";
           printSearchResults(match);
         }
       });
@@ -216,10 +225,20 @@ function startSearch() {
 const submitBtn = document.querySelector("#submit-button");
 submitBtn.addEventListener("click", (e) => {
   e.preventDefault();
-  if (document.getElementById("city-input").value.length !== 0) {
-    startSearch();
+
+  if (document.getElementById('city-input').value.length !== 0) {
+    // show the loading gif image
+    gifFig.style.display = "flex";
+    while (canvas.firstChild) {
+      canvas.removeChild(canvas.firstChild);
+    }
+    // delay the execution of startSearch() by at least 2 seconds
+    setTimeout(() => {
+      startSearch();
+    }, 2000);
+    
   } else {
-    if (!submitBtn.classList.contains("form__button--inactive")) {
+    if (!submitBtn.classList.contains('form__button--inactive')) {
       window.alert("please enter a city");
     } else {
       startSearch();
