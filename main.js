@@ -74,18 +74,15 @@ const printHTML = async (data) => {
 function cleanCanvas() {
   canvas.innerHTML = "";
 
-  let logoBox = document.createElement("div");
-  logoBox.setAttribute("class", "canvas__logo-box");
-  let logo = document.createElement("img");
-  logo.setAttribute("alt", "Spot Check logo");
-  logo.setAttribute(
-    "src",
-    "https://github.com/fac27/Spot-check/blob/main/imgs/spotcheck__logo--transparent.png?raw=true"
-  );
-  logo.setAttribute("class", "canvas__logo");
-
-  canvas.append(logoBox);
-  logoBox.append(logo);
+  printHTML(`
+    <div class='canvas__logo-box'>
+      <img
+      src='https://github.com/fac27/Spot-check/blob/main/imgs/spotcheck__logo--transparent.png?raw=true'
+      alt='spot check logo'
+      class='canvas__logo'
+      >
+    </div>
+  `).then(element => canvas.append(element));
 }
 
 //render search results from Teleport
@@ -180,12 +177,12 @@ const printCityDetails = async (url) => {
     // hide loading gif before proceeding with the rest of the code
     gifFig.style.display = "none";
     printHTML(`
-  <div id='score-card'>
-  <h2 class='city__entry--title'>${city["full_name"]}</h2>
-  <p class='city__entry--subtitle'>Mayor: ${city.mayor}</p>
-  </div>
-  `).then((element) => canvas.appendChild(element));
-  generateScores(`${url}scores`);
+      <div id='score-card'>
+        <h2 class='city__entry--title'>${city["full_name"]}</h2>
+        <p class='city__entry--subtitle'>Mayor: ${city.mayor}</p>
+      </div>
+    `).then((element) => canvas.appendChild(element));
+    generateScores(`${url}scores`);
   }, 2000);
 };
 
