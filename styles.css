@@ -105,7 +105,6 @@ body {
   display: flex;
   flex-flow:column nowrap;
   align-items:center;
-  overflow: auto;
   margin-top: 2rem;
   margin-left: auto;
   margin-right: auto;
@@ -196,7 +195,7 @@ body {
 }
 
 /* *Canvas on Desktop* */
-@media screen and (min-width: 480px) {
+@media screen and (min-width: 590px) {
   .canvas {
     display: flex;
     flex-flow: row wrap;
