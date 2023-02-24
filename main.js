@@ -46,6 +46,8 @@ const callPolice = async (lat, lon) => {
 // fetch City details from the url out of search results
 const fetchCityDetails = async (link) => {
   let result = await (await fetch(link)).json();
+  let lat = await result.location.latlon.latitude;
+  let lon = await result.location.latlon.longitude;
   try {
     printCityDetails(result["_links"]["city:urban_area"].href);
   } catch {
@@ -53,11 +55,10 @@ const fetchCityDetails = async (link) => {
     console.error("printiCityDetails did not find a reference for this city");
   }
   try {
-    let lat = result.location.latlon.latitude;
-    let lon = result.location.latlon.longitude;
     callPolice(lat, lon).then(printPoliceResults);
   } catch {
-    console.error("Unable to find that city");
+    console.error("callPolice did not find a reference for this city");
+    window.alert('No data available for that city');
   }
 };
 
@@ -87,49 +88,69 @@ function cleanCanvas() {
 
 //render search results from Teleport
 const printSearchResults = async (key) => {
-  let resultBox = document.createElement("div");
-  let paragraph = document.createElement("p");
-  let content = document.createTextNode(key["matching_full_name"]);
-  let button = document.createElement("button");
 
-  canvas.appendChild(resultBox);
-  resultBox.setAttribute("class", "canvas__result-box");
-  resultBox.appendChild(paragraph);
-  paragraph.classList.add("canvas__result-text", "stack-md");
-  paragraph.appendChild(content);
-  resultBox.appendChild(button);
-
-  button.setAttribute("class", "canvas__result-button");
-  button.setAttribute("type", "button");
-
-  button.innerText = "See more";
-  button.addEventListener("click", (e) => {
-    fetchCityDetails(key["_links"]["city:item"]["href"]);
-  });
+  printHTML(`
+    <div class='canvas__result-box'>
+      <p class='canvas__result-text'>${key.matching_full_name}</p>
+      <button 
+        type='button' 
+        class='canvas__result-button'
+      >
+        See more
+      </button>
+    </div>
+  `).then(element => {
+    canvas.append(element);
+    let button = element.querySelector('button');
+    button.addEventListener("click", (e) => {
+      fetchCityDetails(key["_links"]["city:item"]["href"]);
+    });
+  }); 
 };
 
 //render city's scores in a grid
 const generateScores = async (url) => {
-  let result = await (await fetch(url)).json();
-  let scores = await result.categories;
+  const result = await (await fetch(url)).json();
+  let scores = result.categories.filter(score => 
+    score.name === 'Safety' || 
+    score.name === 'Cost of Living' || 
+    score.name === 'Education' || 
+    score.name === 'Internet Access' || 
+    score.name === 'Healthcare'
+  );
   let scoreCard = document.getElementById("score-card");
 
-  scoreCard.classList.add("canvas__score-card", "stack-sm");
-
   scores.forEach((score) => {
-    let key = document.createElement("p");
-    let keyText = document.createTextNode(`${score.name}:`);
-    key.setAttribute("class", "city__entry");
-    key.append(keyText);
-
-    let scoring = document.createElement("p");
-    let scoringText = document.createTextNode(
-      `${Math.floor(score["score_out_of_10"])}/10`
-    );
-    scoring.setAttribute("class", "city__value");
-    scoring.append(scoringText);
-
-    scoreCard.append(key, scoring);
+    if (score.name !== 'Safety'){
+      printHTML(`
+        <p class='city__entry'>${score.name}: <p>
+      `).then(element => scoreCard.append(element));
+      printHTML(`
+        <p class='city__value'>${Math.floor(score.score_out_of_10)}/10<p>
+      `).then(element => scoreCard.append(element));
+    }
+    else{
+      printHTML(`
+        <p class='canvas__city-safety'>
+          ${score.name}: 
+            <span class='canvas__city-safety-score'>${Math.floor(score.score_out_of_10)}</span>
+          /10
+        <p>
+      `).then((element) => {
+        let searchHeader = document.querySelector('.canvas__search-header');
+        searchHeader.append(element)
+        let safetySpan = document.querySelector('.canvas__city-safety-score');
+        let safetySpanScore = Math.floor(score.score_out_of_10);
+        
+        if(safetySpanScore >= 0 && safetySpanScore <= 4){
+          safetySpan.classList.add('canvas__city-safety-score--red');
+        } else if(safetySpanScore >= 5 && safetySpanScore <= 7) {
+          safetySpan.classList.add('canvas__city-safety-score--yellow');
+        } else {
+          safetySpan.classList.add('canvas__city-safety-score--green');
+        }
+      });
+    }
   });
 
   canvas.append(scoreCard);
@@ -138,28 +159,29 @@ const generateScores = async (url) => {
 //callaback to print crime data on screen
 const printPoliceResults = (occurrences) => {
   try {
-    let crimeLabel = document.createElement("div");
-    crimeLabel.classList.add('crime-score-card__title');
-    let crimeLabelpara = document.createElement("p");
-    crimeLabelpara.innerHTML = "Crime occurrences in this area:";
-    
     let crimeScoreCard = document.createElement("div");
-    crimeScoreCard.setAttribute("class", "canvas__score-card");
+    crimeScoreCard.classList.add("canvas__score-card", 'canvas__score-card--crime');
     canvas.appendChild(crimeScoreCard);
-    crimeScoreCard.appendChild(crimeLabel);
-    crimeLabel.appendChild(crimeLabelpara);
+
+    gifFig.style.display = 'flex';
+    setTimeout(() => {
+      gifFig.style.display = 'none';
+      for (const [key, value] of Object.entries(occurrences)) {
+        if(key === 'Burglary' || 
+          key === 'Bicycle-theft' || 
+          key === 'Public-order' || 
+          key === 'Other-crime'){
+          
+          printHTML(`
+            <p class='city__entry'>${key}:<p>
+          `).then(element => crimeScoreCard.append(element));
     
-    for (const [key, value] of Object.entries(occurrences)) {
-      let crimeEntry = document.createElement("p");
-      crimeEntry.setAttribute("class", "city__entry");
-      crimeEntry.innerHTML = `${key}:`;
-      crimeScoreCard.appendChild(crimeEntry);
-      
-      let crimeValue = document.createElement("p");
-      crimeValue.setAttribute("class", "city__value");
-      crimeValue.innerHTML = value;
-      crimeScoreCard.appendChild(crimeValue);
-    }
+          printHTML(`
+            <p class='city__value'>${value}<p>
+          `).then(element => crimeScoreCard.append(element));
+        }
+      };
+    }, 2001);
   } catch {
     console.error("Unable to retrieve data");
   }
@@ -177,11 +199,14 @@ const printCityDetails = async (url) => {
     // hide loading gif before proceeding with the rest of the code
     gifFig.style.display = "none";
     printHTML(`
-      <div id='score-card'>
-        <h2 class='city__entry--title'>${city["full_name"]}</h2>
-        <p class='city__entry--subtitle'>Mayor: ${city.mayor}</p>
-      </div>
+    <div class='canvas__search-header'>
+    <h2 class='city__entry--title'>${city["full_name"]}</h2>
+    <p class='city__entry--subtitle'>Mayor: ${city.mayor}</p>
+    </div>
     `).then((element) => canvas.appendChild(element));
+    printHTML(`
+      <div id='score-card' class='canvas__score-card stack-md'></div>
+    `).then(element => canvas.append(element));
     generateScores(`${url}scores`);
   }, 2000);
 };
