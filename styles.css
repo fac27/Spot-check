@@ -17,6 +17,7 @@
 
 body {
   margin-top: 3.5rem;
+  background-color:var(--color__white);
 }
 
 /* *Page Header* */
@@ -28,6 +29,7 @@ body {
   width: 100%;
   padding: 0 10%;
   background-color: var(--color__base);
+  z-index: 3;
 }
 
 #nav-img {
@@ -102,12 +104,12 @@ body {
 
 /* *Canvas and Classes within it* */
 .canvas {
-  display: flex;
-  flex-flow:column nowrap;
-  align-items:center;
-  margin-top: 2rem;
+  display:grid;
+  grid-template-rows: repeat(1fr);
+  row-gap:1rem;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom:2rem;
   height: 60vh;
   width: 90%;
 }
@@ -165,13 +167,15 @@ body {
 
 .canvas__score-card {
   display: grid;
-  margin-left:auto;
-  margin-right:auto;
   padding:.5em;
   border-radius:20px;
-  grid-template-columns: 3fr 1fr;
+  width: 100%;
   align-items: center;
   background-color: var(--color__base);
+}
+
+.canvas__score-card--crime{
+  grid-row: 3;
 }
 
 .city__entry {
@@ -189,21 +193,53 @@ body {
   height:1em;
 }
 
-.crime-score-card__title{
-  grid-column: span 2;
-  font-weight:bold;
+.canvas__search-header{
+  background-color: var(--color__highlight);
+  grid-row:1;
+  height:max-content;
+  padding:.5em;
+  border-radius:20px;
+  border:2px solid black;
 }
+
+.canvas__city-safety-score{
+  font-weight:bold;
+  font-size:1.2rem;
+  text-shadow: 0 0 15px white;
+}
+
+.canvas__city-safety-score--red{
+  color:red;
+}
+
+.canvas__city-safety-score--yellow{
+  color:yellow;
+}
+
+.canvas__city-safety-score--green{
+  color:green;
+}
+
 
 /* *Canvas on Desktop* */
 @media screen and (min-width: 590px) {
   .canvas {
-    display: flex;
-    flex-flow: row wrap;
-    align-items: baseline;
-    justify-content: space-around;
+    align-items:baseline;
+    gap:1rem;
   }
+
+  .canvas__search-header{
+    grid-column:span 2;
+    grid-row: 1;
+  }
+
   .canvas__score-card{
-    width:45%;
+
+    grid-row:2;
+  }
+
+  .canvas__score-card--crime{
+    grid-column: 2;
   }
 
   .canvas__paragraph {
