@@ -159,13 +159,13 @@ const generateScores = async (url) => {
 //callaback to print crime data on screen
 const printPoliceResults = (occurrences) => {
   try {
-    let crimeScoreCard = document.createElement("div");
-    crimeScoreCard.classList.add("canvas__score-card", 'canvas__score-card--crime');
-    canvas.appendChild(crimeScoreCard);
-
+    
     gifFig.style.display = 'flex';
     setTimeout(() => {
       gifFig.style.display = 'none';
+      let crimeScoreCard = document.createElement("div");
+      crimeScoreCard.classList.add("canvas__score-card", 'canvas__score-card--crime', 'stack-sm');
+      canvas.appendChild(crimeScoreCard);
       for (const [key, value] of Object.entries(occurrences)) {
         if(key === 'Burglary' || 
           key === 'Bicycle-theft' || 
@@ -205,7 +205,7 @@ const printCityDetails = async (url) => {
     </div>
     `).then((element) => canvas.appendChild(element));
     printHTML(`
-      <div id='score-card' class='canvas__score-card stack-md'></div>
+      <div id='score-card' class='canvas__score-card stack-sm'></div>
     `).then(element => canvas.append(element));
     generateScores(`${url}scores`);
   }, 2000);
@@ -227,7 +227,9 @@ function startSearch() {
     canvas.innerHTML = "";
 
     fetchTeleport(searchInput).then((matches) => {
-      Object.values(matches).forEach((match) => {
+      let filteredMatches = Object.values(matches).filter(match => ukRegex.test(match.matching_full_name));
+
+      filteredMatches.forEach(match => {
         if (ukRegex.test(match["matching_full_name"])) {
           // hide loading gif before printSearchResults(match) is called
           gifFig.style.display = "none";
